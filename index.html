@@ -91,10 +91,11 @@ body{min-height:100vh;background:linear-gradient(135deg,#2c1b54,#422880,#201440)
     <h1>📕 错题本</h1>
     <p>Markdown · LaTeX · 重练追踪</p>
   </div>
-  <div id="syncBar" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;font-size:13px">
+  <div id="syncBar" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;font-size:13px;flex-wrap:wrap">
     <span id="syncLight" style="width:10px;height:10px;border-radius:50%;background:#666;display:inline-block"></span>
     <span id="syncText" style="color:#a8a8d8">未登录</span>
     <button id="loginBtn" onclick="doLogin()" style="padding:4px 12px;border:none;border-radius:6px;background:linear-gradient(90deg,#ffd700,#ff9500);color:#222;font-weight:bold;cursor:pointer;font-size:12px">登录同步</button>
+    <button onclick="openDiag()" style="padding:4px 10px;border:1px solid rgba(255,255,255,0.2);border-radius:6px;background:transparent;color:#a8a8d8;cursor:pointer;font-size:12px">🔍 诊断</button>
   </div>
   <div class="filter-bar" id="filterBar"></div>
   <div id="entryList"></div>
@@ -121,6 +122,19 @@ body{min-height:100vh;background:linear-gradient(135deg,#2c1b54,#422880,#201440)
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeEdit()">取消</button>
       <button class="btn-save" onclick="saveEntry()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 诊断弹窗 -->
+<div class="mask" id="diagMask">
+  <div class="sheet">
+    <h3>🔍 同步诊断</h3>
+    <pre id="diagReport" style="background:rgba(0,0,0,0.3);padding:12px;border-radius:8px;font-size:12px;max-height:50vh;overflow-y:auto;white-space:pre-wrap;word-break:break-all;color:#ccc"></pre>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeDiag()">关闭</button>
+      <button class="btn-save" onclick="runDiag()">重新诊断</button>
+      <button class="btn-save" onclick="refreshToken()">🔑 刷新Token</button>
     </div>
   </div>
 </div>
@@ -353,6 +367,39 @@ if(isLoggedIn() && typeof syncPull==="function"){ syncPull(()=>updateSyncBar());
 const origSet = setEntries;
 setEntries = function(l){ origSet(l); if(typeof syncPushDebounced==="function") syncPushDebounced(1000); };
 updateSyncBar();
+
+// ===== 诊断 =====
+async function openDiag(){
+  document.getElementById("diagMask").classList.add("show");
+  await runDiag();
+}
+function closeDiag(){ document.getElementById("diagMask").classList.remove("show"); }
+async function runDiag(){
+  const el = document.getElementById("diagReport");
+  el.innerText = "诊断中…";
+  try{
+    const report = await syncDiagnose();
+    let extra = "";
+    const token = localStorage.getItem("wrongBookMSAToken");
+    const rt = localStorage.getItem("wrongBookMSARefresh");
+    const exp = localStorage.getItem("wrongBookMSAExpires");
+    extra += "\n--- 本地信息 ---\n";
+    extra += "Access Token: " + (token ? token.slice(0,20)+"…" : "无") + "\n";
+    extra += "Refresh Token: " + (rt ? rt.slice(0,15)+"…" : "无") + "\n";
+    extra += "过期时间: " + (exp ? new Date(Number(exp)).toLocaleString() : "无") + "\n";
+    extra += "错题条数: " + getEntries().length + "\n";
+    el.innerText = report + extra;
+  }catch(e){
+    el.innerText = "诊断失败: " + e.message;
+  }
+}
+async function refreshToken(){
+  const el = document.getElementById("diagReport");
+  el.innerText = "正在刷新 Token…";
+  const ok = await refreshAccessToken();
+  el.innerText = ok ? "✅ Token 刷新成功" : "❌ Token 刷新失败，请重新登录";
+  if(ok) runDiag();
+}
 </script>
 </body>
 </html>
