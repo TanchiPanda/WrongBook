@@ -98,6 +98,9 @@ body{min-height:100vh;background:linear-gradient(135deg,#2c1b54,#422880,#201440)
     <button onclick="openDiag()" style="padding:4px 10px;border:1px solid rgba(255,255,255,0.2);border-radius:6px;background:transparent;color:#a8a8d8;cursor:pointer;font-size:12px">🔍 诊断</button>
   </div>
   <div class="filter-bar" id="filterBar"></div>
+  <div style="position:relative;margin-bottom:12px">
+    <input type="text" id="searchBox" placeholder="🔍 搜索科目/题目/答案/错因…" oninput="renderList()" style="width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(0,0,0,0.25);color:#fff;font-size:14px">
+  </div>
   <div id="entryList"></div>
 </div>
 
@@ -186,9 +189,21 @@ function renderList(){
   if(currentFilter==="已归档") list = entries.filter(e=>e.archived);
   else if(currentFilter==="全部") list = entries.filter(e=>!e.archived);
   else list = entries.filter(e=>!e.archived && e.subject===currentFilter);
+  // 搜索过滤
+  const q = (document.getElementById("searchBox")?.value||"").trim().toLowerCase();
+  if(q){
+    list = list.filter(e =>
+      (e.subject||"").toLowerCase().includes(q) ||
+      (e.question||"").toLowerCase().includes(q) ||
+      (e.wrong||"").toLowerCase().includes(q) ||
+      (e.correct||"").toLowerCase().includes(q) ||
+      (e.note||"").toLowerCase().includes(q) ||
+      (e.date||"").includes(q)
+    );
+  }
   const el = document.getElementById("entryList");
   if(!list.length){
-    el.innerHTML = '<div class="empty"><div class="icon">📝</div><p>还没有记录<br>点右下角 + 添加</p></div>';
+    el.innerHTML = '<div class="empty"><div class="icon">🔍</div><p>'+(q?'没有匹配「'+q+'」的记录':'还没有记录<br>点右下角 + 添加')+'</p></div>';
     return;
   }
   el.innerHTML = list.slice().reverse().map(e=>{
