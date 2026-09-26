@@ -91,6 +91,11 @@ body{min-height:100vh;background:linear-gradient(135deg,#2c1b54,#422880,#201440)
     <h1>📕 错题本</h1>
     <p>Markdown · LaTeX · 重练追踪</p>
   </div>
+  <div id="syncBar" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;font-size:13px">
+    <span id="syncLight" style="width:10px;height:10px;border-radius:50%;background:#666;display:inline-block"></span>
+    <span id="syncText" style="color:#a8a8d8">未登录</span>
+    <button id="loginBtn" onclick="doLogin()" style="padding:4px 12px;border:none;border-radius:6px;background:linear-gradient(90deg,#ffd700,#ff9500);color:#222;font-weight:bold;cursor:pointer;font-size:12px">登录同步</button>
+  </div>
   <div class="filter-bar" id="filterBar"></div>
   <div id="entryList"></div>
 </div>
@@ -120,6 +125,8 @@ body{min-height:100vh;background:linear-gradient(135deg,#2c1b54,#422880,#201440)
   </div>
 </div>
 
+<script src="auth.js"></script>
+<script src="sync.js"></script>
 <script>
 const KEY = "wrongBookEntries";
 let currentFilter = "全部";
@@ -314,6 +321,38 @@ function delEntry(idx){
 
 renderFilters();
 renderList();
+
+// ===== 登录与同步 =====
+function doLogin(){ loginWithGitHub(); }
+function updateSyncBar(){
+  const light = document.getElementById("syncLight");
+  const text = document.getElementById("syncText");
+  const btn = document.getElementById("loginBtn");
+  if(isLoggedIn()){
+    const user = getGitHubUser();
+    const s = getSyncState();
+    light.className = "";
+    if(s.state==="idle"){ light.style.background="#2ecc71"; }
+    else if(s.state==="syncing"){ light.style.background="#f39c12"; }
+    else if(s.state==="error"){ light.style.background="#e74c3c"; }
+    else { light.style.background="#2ecc71"; }
+    text.innerText = (user?.name||"已登录") + (s.lastOk?" · "+s.lastOk:"");
+    btn.innerText = "退出";
+    btn.onclick = ()=>{ logout(); location.reload(); };
+  } else {
+    light.style.background="#666";
+    text.innerText = "未登录";
+    btn.innerText = "登录同步";
+    btn.onclick = doLogin;
+  }
+}
+if(typeof onSyncStateChange==="function"){ onSyncStateChange(()=>updateSyncBar()); }
+// 启动时拉取
+if(isLoggedIn() && typeof syncPull==="function"){ syncPull(()=>updateSyncBar()); }
+// 数据变化时自动推送
+const origSet = setEntries;
+setEntries = function(l){ origSet(l); if(typeof syncPushDebounced==="function") syncPushDebounced(1000); };
+updateSyncBar();
 </script>
 </body>
 </html>
