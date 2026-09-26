@@ -3,198 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>错题本 - 单词复习</title>
+<title>错题本</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei","PingFang SC",-apple-system,BlinkMacSystemFont,sans-serif;-webkit-tap-highlight-color:transparent}
-body{min-height:100vh;background:linear-gradient(135deg,#2c1b54,#422880,#201440);padding:20px 12px 40px;text-align:center;color:#fff;overflow-x:hidden}
-.container{position:relative;z-index:2;max-width:560px;margin:0 auto;background:rgba(255,255,255,0.06);border:2px solid rgba(255,107,107,0.5);border-radius:20px;padding:32px 20px;box-shadow:0 8px 32px rgba(0,0,0,0.35)}
-.logo-title{font-size:28px;font-weight:900;letter-spacing:4px;margin-bottom:8px;background:linear-gradient(90deg,#ff6b6b,#ffd700,#4ecdc4);-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub-title{color:#a8a8d8;font-size:14px;letter-spacing:2px;margin-bottom:24px}
-.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
-.stat-box{background:rgba(255,255,255,0.08);border-radius:12px;padding:12px 6px}
-.stat-num{font-size:24px;font-weight:900;color:#ffd700}
-.stat-label{font-size:12px;color:#a8a8d8;margin-top:4px}
-.entry-btn{display:flex;align-items:center;justify-content:gap:10px;width:100%;max-width:360px;margin:0 auto 12px;padding:16px 18px;border:none;border-radius:14px;font-size:18px;font-weight:bold;letter-spacing:2px;cursor:pointer;transition:transform 0.2s}
-.entry-btn:active{transform:scale(0.97)}
-.btn-review{background:linear-gradient(90deg,#ff6b6b,#ee4c4c);color:#fff;box-shadow:0 6px 20px rgba(238,76,76,0.4)}
-.btn-list{background:linear-gradient(90deg,#4ecdc4,#39d98a);color:#0d3b2e;box-shadow:0 6px 20px rgba(78,205,196,0.4)}
-.btn-add{background:linear-gradient(90deg,#ffd700,#ff9500);color:#222;box-shadow:0 6px 20px rgba(255,215,0,0.35)}
-.word-list{text-align:left;margin-top:10px;max-height:50vh;overflow-y:auto}
-.word-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:12px;margin-bottom:8px;border-left:3px solid #ff6b6b}
-.word-item .en{flex:1;font-size:17px;font-weight:bold;color:#fff}
-.word-item .cn{font-size:13px;color:#a8a8d8}
-.word-item .del{background:rgba(255,107,107,0.2);border:none;color:#ff8888;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px}
-.empty{padding:30px;color:#888;text-align:center;font-size:14px}
-.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
-.modal-mask.show{display:flex}
-.modal-box{background:linear-gradient(135deg,#2c1b54,#1a1a2e);border:2px solid rgba(255,215,0,0.4);border-radius:16px;padding:24px;width:100%;max-width:360px}
-.modal-box h3{color:#ffd700;margin-bottom:16px;font-size:18px}
-.modal-box input{width:100%;padding:10px 12px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(0,0,0,0.3);color:#fff;font-size:14px}
-.modal-box input:focus{outline:none;border-color:#ffd700}
-.modal-btns{display:flex;gap:10px;margin-top:10px}
-.modal-btns button{flex:1;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer}
-.modal-btns .ok{background:linear-gradient(90deg,#ffd700,#ff9500);color:#222}
-.modal-btns .cancel{background:rgba(255,255,255,0.1);color:#ccc}
-/* 复习模式 */
-.review-card{background:rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin:16px 0;display:none}
-.review-card.show{display:block}
-.review-en{font-size:32px;font-weight:900;color:#ffd700;margin-bottom:8px}
-.review-phonetic{font-size:15px;color:#4ecdc4;margin-bottom:16px}
-.review-cn{font-size:18px;color:#fff;min-height:30px;margin-bottom:20px}
-.review-progress{font-size:13px;color:#a8a8d8;margin-bottom:10px}
-.hidden{display:none!important}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei","PingFang SC",-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:linear-gradient(135deg,#2c1b54,#422880,#201440);padding:16px 12px 80px;color:#fff}
+.container{max-width:600px;margin:0 auto}
+.header{text-align:center;padding:16px 0 20px}
+.header h1{font-size:26px;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#ff6b6b,#ffd700);-webkit-background-clip:text;background-clip:text;color:transparent}
+.header p{color:#a8a8d8;font-size:13px;margin-top:4px}
+
+/* 筛选栏 */
+.filter-bar{display:flex;gap:8px;overflow-x:auto;padding:8px 0;margin-bottom:14px;-webkit-overflow-scrolling:touch}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:7px 14px;border-radius:20px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ccc;font-size:13px;cursor:pointer;white-space:nowrap}
+.filter-chip.active{background:linear-gradient(90deg,#ff6b6b,#ee4c4c);color:#fff;border-color:transparent;font-weight:bold}
+
+/* 条目卡片 */
+.entry-card{background:rgba(255,255,255,0.06);border-radius:14px;padding:14px 16px;margin-bottom:10px;border-left:4px solid #ff6b6b}
+.entry-card .ec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.entry-card .ec-subject{font-size:12px;padding:2px 10px;border-radius:10px;background:rgba(255,215,0,0.15);color:#ffd700;font-weight:bold}
+.entry-card .ec-date{font-size:11px;color:#888}
+.entry-card .ec-q{font-size:15px;line-height:1.6;margin-bottom:8px;color:#fff}
+.entry-card .ec-row{font-size:13px;line-height:1.6;margin-top:4px}
+.entry-card .ec-row .label{color:#ff8888;font-weight:bold}
+.entry-card .ec-row.correct .label{color:#2ecc71}
+.entry-card .ec-row .val{color:#ccc}
+.entry-card .ec-note{font-size:12px;color:#a8a8d8;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.1)}
+.entry-card .ec-actions{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
+.entry-card .ec-actions button{padding:5px 12px;border:none;border-radius:6px;font-size:12px;cursor:pointer}
+.ec-edit{background:rgba(78,205,196,0.2);color:#4ecdc4}
+.ec-del{background:rgba(255,107,107,0.2);color:#ff8888}
+
+/* 悬浮添加按钮 */
+.fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#ff6b6b,#ee4c4c);color:#fff;font-size:28px;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(238,76,76,0.5);z-index:50;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(0.9)}
+
+/* 弹窗 */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.mask.show{display:flex}
+.sheet{background:linear-gradient(180deg,#2c1b54,#1a1a2e);width:100%;max-width:600px;border-radius:20px 20px 0 0;padding:20px;max-height:90vh;overflow-y:auto}
+.sheet h3{color:#ffd700;margin-bottom:14px;font-size:18px;text-align:center}
+.sheet label{display:block;font-size:13px;color:#a8a8d8;margin:10px 0 4px}
+.sheet input,.sheet select,.sheet textarea{width:100%;padding:10px 12px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:rgba(0,0,0,0.3);color:#fff;font-size:14px;font-family:inherit}
+.sheet textarea{min-height:70px;resize:vertical}
+.sheet input:focus,.sheet textarea:focus,.sheet select:focus{outline:none;border-color:#ffd700}
+.sheet-btns{display:flex;gap:10px;margin-top:16px}
+.sheet-btns button{flex:1;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer}
+.btn-save{background:linear-gradient(90deg,#ffd700,#ff9500);color:#222}
+.btn-cancel{background:rgba(255,255,255,0.1);color:#ccc}
+
+.empty{text-align:center;padding:60px 20px;color:#666}
+.empty .icon{font-size:48px;margin-bottom:12px}
+.empty p{font-size:14px;line-height:1.8}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="logo-title">📕 错题本</div>
-  <div class="sub-title">记录错词 · 针对性复习</div>
-
-  <div class="stats-row">
-    <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">错词总数</div></div>
-    <div class="stat-box"><div class="stat-num" id="statToday">0</div><div class="stat-label">今日复习</div></div>
-    <div class="stat-box"><div class="stat-num" id="statMastered">0</div><div class="stat-label">已掌握</div></div>
+  <div class="header">
+    <h1>📕 错题本</h1>
+    <p>记录每一道错题，不再犯第二次</p>
   </div>
 
-  <button class="entry-btn btn-review" onclick="startReview()">🔄 开始复习</button>
-  <button class="entry-btn btn-list" onclick="toggleList()">📋 错词列表</button>
-  <button class="entry-btn btn-add" onclick="showAdd()">➕ 添加错词</button>
-
-  <!-- 列表模式 -->
-  <div id="listPanel" class="hidden">
-    <div class="word-list" id="wordList"></div>
+  <div class="filter-bar" id="filterBar">
+    <div class="filter-chip active" data-subject="全部" onclick="setFilter('全部',this)">全部</div>
   </div>
 
-  <!-- 复习模式 -->
-  <div id="reviewPanel" class="review-card">
-    <div class="review-progress" id="reviewProgress">1 / 10</div>
-    <div class="review-en" id="rEn">word</div>
-    <div class="review-phonetic" id="rPhonetic">/wɜːd/</div>
-    <div class="review-cn" id="rCn" style="color:#666">点击「显示答案」查看中文</div>
-    <div class="modal-btns">
-      <button class="cancel" onclick="showAnswer()">👁 显示答案</button>
-    </div>
-    <div class="modal-btns hidden" id="reviewBtns">
-      <button class="cancel" style="background:rgba(255,107,107,0.3);color:#ff8888" onclick="markWrong()">❌ 还错</button>
-      <button class="ok" onclick="markRight()">✅ 记住了</button>
-    </div>
-  </div>
+  <div id="entryList"></div>
 </div>
 
-<!-- 添加弹窗 -->
-<div class="modal-mask" id="addModal">
-  <div class="modal-box">
-    <h3>➕ 添加错词</h3>
-    <input type="text" id="inEn" placeholder="英文单词">
-    <input type="text" id="inPhonetic" placeholder="音标（可选）">
-    <input type="text" id="inCn" placeholder="中文意思">
-    <div class="modal-btns">
-      <button class="cancel" onclick="closeAdd()">取消</button>
-      <button class="ok" onclick="saveAdd()">保存</button>
+<button class="fab" onclick="openAdd()">+</button>
+
+<!-- 添加/编辑弹窗 -->
+<div class="mask" id="editMask">
+  <div class="sheet">
+    <h3 id="sheetTitle">➕ 添加错题</h3>
+    <label>科目</label>
+    <input type="text" id="fSubject" list="subjectList" placeholder="如：数学、英语、物理">
+    <datalist id="subjectList"></datalist>
+    <label>题目</label>
+    <textarea id="fQuestion" placeholder="写下题目或粘贴照片描述…"></textarea>
+    <label>我的错误答案</label>
+    <textarea id="fWrong" placeholder="当时写的答案"></textarea>
+    <label>正确答案</label>
+    <textarea id="fCorrect" placeholder="正确答案"></textarea>
+    <label>备注 / 错因分析</label>
+    <textarea id="fNote" placeholder="为什么错？知识点？（可选）"></textarea>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeEdit()">取消</button>
+      <button class="btn-save" onclick="saveEntry()">保存</button>
     </div>
   </div>
 </div>
 
 <script>
-const KEY = "wrongBookList";
-function getList(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch{ return []; } }
-function setList(l){ localStorage.setItem(KEY, JSON.stringify(l)); }
+const KEY = "wrongBookEntries";
+let currentFilter = "全部";
+let editingIdx = -1;
 
-function renderStats(){
-  const l = getList();
-  document.getElementById("statTotal").innerText = l.length;
-  document.getElementById("statMastered").innerText = l.filter(w=>w.mastered).length;
-  const today = new Date().toDateString();
-  document.getElementById("statToday").innerText = l.filter(w=>w.lastReview===today).length;
+function getEntries(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch{ return []; } }
+function setEntries(l){ localStorage.setItem(KEY, JSON.stringify(l)); }
+
+function renderFilters(){
+  const entries = getEntries();
+  const subjects = [...new Set(entries.map(e=>e.subject).filter(Boolean))];
+  const bar = document.getElementById("filterBar");
+  bar.innerHTML = '<div class="filter-chip'+(currentFilter==="全部"?" active":"")+'" data-subject="全部" onclick="setFilter(\'全部\',this)">全部</div>' +
+    subjects.map(s=>`<div class="filter-chip${currentFilter===s?' active':''}" data-subject="${s}" onclick="setFilter('${s}',this)">${s}</div>`).join("");
+  // 更新 datalist
+  document.getElementById("subjectList").innerHTML = subjects.map(s=>`<option value="${s}">`).join("");
 }
 
-function toggleList(){
-  const p = document.getElementById("listPanel");
-  p.classList.toggle("hidden");
-  if(!p.classList.contains("hidden")) renderList();
+function setFilter(s, el){
+  currentFilter = s;
+  document.querySelectorAll(".filter-chip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
+  renderList();
 }
+
 function renderList(){
-  const l = getList();
-  const el = document.getElementById("wordList");
-  if(!l.length){ el.innerHTML = '<div class="empty">还没有错词，点击上方添加</div>'; return; }
-  el.innerHTML = l.map((w,i)=>`
-    <div class="word-item" style="${w.mastered?'opacity:0.5;border-left-color:#2ecc71':''}">
-      <div style="flex:1">
-        <div class="en">${w.en} ${w.mastered?'✅':''}</div>
-        <div class="cn">${w.phonetic||''} ${w.pos||''} ${w.cn||''}</div>
-      </div>
-      <button class="del" onclick="delWord(${i})">✕</button>
-    </div>`).join("");
-}
-function delWord(i){
-  if(!confirm("删除这个错词？")) return;
-  const l = getList(); l.splice(i,1); setList(l); renderList(); renderStats();
-}
-
-function showAdd(){ document.getElementById("addModal").classList.add("show"); }
-function closeAdd(){ document.getElementById("addModal").classList.remove("show"); }
-function saveAdd(){
-  const en = document.getElementById("inEn").value.trim();
-  if(!en){ alert("请输入英文"); return; }
-  const l = getList();
-  l.push({ en, phonetic:document.getElementById("inPhonetic").value.trim(), cn:document.getElementById("inCn").value.trim(), mastered:false, addedAt:Date.now(), lastReview:null });
-  setList(l);
-  document.getElementById("inEn").value=""; document.getElementById("inPhonetic").value=""; document.getElementById("inCn").value="";
-  closeAdd(); renderStats();
-}
-
-// 复习
-let reviewQueue = [], reviewIdx = 0;
-function startReview(){
-  const l = getList().filter(w=>!w.mastered);
-  if(!l.length){ alert("没有需要复习的错词！"); return; }
-  reviewQueue = l.sort(()=>Math.random()-0.5);
-  reviewIdx = 0;
-  document.getElementById("listPanel").classList.add("hidden");
-  document.getElementById("reviewPanel").classList.add("show");
-  showCard();
-}
-function showCard(){
-  const w = reviewQueue[reviewIdx];
-  document.getElementById("reviewProgress").innerText = (reviewIdx+1)+" / "+reviewQueue.length;
-  document.getElementById("rEn").innerText = w.en;
-  document.getElementById("rPhonetic").innerText = w.phonetic||"";
-  document.getElementById("rCn").innerText = "点击「显示答案」查看中文";
-  document.getElementById("rCn").style.color = "#666";
-  document.getElementById("reviewBtns").classList.add("hidden");
-}
-function showAnswer(){
-  const w = reviewQueue[reviewIdx];
-  document.getElementById("rCn").innerText = w.cn||"（无注释）";
-  document.getElementById("rCn").style.color = "#ffd700";
-  document.getElementById("reviewBtns").classList.remove("hidden");
-}
-function markRight(){
-  const w = reviewQueue[reviewIdx];
-  const l = getList();
-  const t = l.find(x=>x.en===w.en);
-  if(t){ t.mastered = true; t.lastReview = new Date().toDateString(); }
-  setList(l); nextCard();
-}
-function markWrong(){
-  const w = reviewQueue[reviewIdx];
-  const l = getList();
-  const t = l.find(x=>x.en===w.en);
-  if(t){ t.mastered = false; t.lastReview = new Date().toDateString(); }
-  setList(l); nextCard();
-}
-function nextCard(){
-  reviewIdx++;
-  if(reviewIdx >= reviewQueue.length){
-    document.getElementById("reviewPanel").classList.remove("show");
-    renderStats();
-    alert("🎉 复习完成！");
+  const entries = getEntries();
+  const list = currentFilter==="全部" ? entries : entries.filter(e=>e.subject===currentFilter);
+  const el = document.getElementById("entryList");
+  if(!list.length){
+    el.innerHTML = '<div class="empty"><div class="icon">📝</div><p>还没有错题记录<br>点右下角 + 添加第一道</p></div>';
     return;
   }
-  showCard();
+  el.innerHTML = list.slice().reverse().map(e=>{
+    const idx = entries.indexOf(e);
+    return `<div class="entry-card">
+      <div class="ec-head">
+        <span class="ec-subject">${e.subject||"未分类"}</span>
+        <span class="ec-date">${e.date||""}</span>
+      </div>
+      <div class="ec-q">${escapeHtml(e.question||"")}</div>
+      <div class="ec-row"><span class="label">✗ 错：</span><span class="val">${escapeHtml(e.wrong||"")}</span></div>
+      <div class="ec-row correct"><span class="label">✓ 对：</span><span class="val">${escapeHtml(e.correct||"")}</span></div>
+      ${e.note?`<div class="ec-note">💡 ${escapeHtml(e.note)}</div>`:""}
+      <div class="ec-actions">
+        <button class="ec-edit" onclick="openEdit(${idx})">✏️ 编辑</button>
+        <button class="ec-del" onclick="delEntry(${idx})">🗑 删除</button>
+      </div>
+    </div>`;
+  }).join("");
 }
 
-renderStats();
+function escapeHtml(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+function openAdd(){
+  editingIdx = -1;
+  document.getElementById("sheetTitle").innerText = "➕ 添加错题";
+  document.getElementById("fSubject").value = "";
+  document.getElementById("fQuestion").value = "";
+  document.getElementById("fWrong").value = "";
+  document.getElementById("fCorrect").value = "";
+  document.getElementById("fNote").value = "";
+  document.getElementById("editMask").classList.add("show");
+}
+function openEdit(idx){
+  editingIdx = idx;
+  const e = getEntries()[idx];
+  document.getElementById("sheetTitle").innerText = "✏️ 编辑错题";
+  document.getElementById("fSubject").value = e.subject||"";
+  document.getElementById("fQuestion").value = e.question||"";
+  document.getElementById("fWrong").value = e.wrong||"";
+  document.getElementById("fCorrect").value = e.correct||"";
+  document.getElementById("fNote").value = e.note||"";
+  document.getElementById("editMask").classList.add("show");
+}
+function closeEdit(){ document.getElementById("editMask").classList.remove("show"); }
+
+function saveEntry(){
+  const subject = document.getElementById("fSubject").value.trim();
+  const question = document.getElementById("fQuestion").value.trim();
+  if(!question){ alert("请填写题目"); return; }
+  const entry = {
+    subject, question,
+    wrong: document.getElementById("fWrong").value.trim(),
+    correct: document.getElementById("fCorrect").value.trim(),
+    note: document.getElementById("fNote").value.trim(),
+    date: new Date().toLocaleDateString("zh-CN")
+  };
+  const entries = getEntries();
+  if(editingIdx>=0){ entries[editingIdx] = entry; }
+  else { entries.push(entry); }
+  setEntries(entries);
+  closeEdit();
+  renderFilters();
+  renderList();
+}
+
+function delEntry(idx){
+  if(!confirm("删除这道错题？")) return;
+  const entries = getEntries();
+  entries.splice(idx,1);
+  setEntries(entries);
+  renderFilters();
+  renderList();
+}
+
+renderFilters();
+renderList();
 </script>
 </body>
 </html>
